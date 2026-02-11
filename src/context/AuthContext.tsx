@@ -49,23 +49,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const unsubscribe = onAuthStateChanged(auth!, async (user) => {
             setUser(user);
             if (user) {
-                // Check if user exists in DB, if not create with random username
-                const userRef = doc(db!, 'users', user.uid);
-                const userSnap = await getDoc(userRef);
+                try {
+                    // Check if user exists in DB, if not create with random username
+                    const userRef = doc(db!, 'users', user.uid);
+                    const userSnap = await getDoc(userRef);
 
-                if (userSnap.exists()) {
-                    setRomanticUsername(userSnap.data().romanticUsername);
-                } else {
-                    const newUsername = generateUsername();
-                    await setDoc(userRef, {
-                        uid: user.uid,
-                        displayName: user.displayName,
-                        email: user.email,
-                        photoURL: user.photoURL,
-                        romanticUsername: newUsername,
-                        createdAt: serverTimestamp()
-                    });
-                    setRomanticUsername(newUsername);
+                    if (userSnap.exists()) {
+                        const data = userSnap.data();
+                        if (data.romanticUsername) {
+                            setRomanticUsername(data.romanticUsername);
+                        } else {
+                            // HEAL: User exists but no username? Generate one!
+                            const newUsername = generateUsername();
+                            await setDoc(userRef, { romanticUsername: newUsername }, { merge: true });
+                            setRomanticUsername(newUsername);
+                        }
+                    } else {
+                        const newUsername = generateUsername();
+                        await setDoc(userRef, {
+                            uid: user.uid,
+                            displayName: user.displayName,
+                            email: user.email,
+                            photoURL: user.photoURL,
+                            romanticUsername: newUsername,
+                            createdAt: serverTimestamp()
+                        });
+                        setRomanticUsername(newUsername);
+                    }
+                } catch (error) {
+                    console.error("Error fetching/creating user profile:", error);
+                    setRomanticUsername(null);
                 }
             } else {
                 setRomanticUsername(null);
