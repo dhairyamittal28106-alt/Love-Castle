@@ -53,7 +53,7 @@ export function Settings() {
 
                 <div className="p-6 space-y-6">
                     {/* Romantic Identity Section */}
-                    {romanticUsername && (
+                    {romanticUsername ? (
                         <div className="bg-love-50/50 rounded-xl p-4 border border-love-100">
                             <label className="block text-sm font-medium text-gray-700 mb-2">
                                 Your Secret Identity
@@ -73,6 +73,16 @@ export function Settings() {
                             <p className="text-xs text-gray-500 mt-2">
                                 Share this with your Valentine so they can verify it's you!
                             </p>
+                        </div>
+                    ) : (
+                        <div className="bg-red-50 rounded-xl p-4 border border-red-100 text-center">
+                            <p className="text-red-600 font-medium mb-2">Username Missing?</p>
+                            <button
+                                onClick={() => window.location.reload()}
+                                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 text-sm"
+                            >
+                                Tap to Regenerate Identity
+                            </button>
                         </div>
                     )}
 
