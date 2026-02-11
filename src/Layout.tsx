@@ -16,9 +16,9 @@ export function Layout() {
             <BackgroundEffect />
             <nav className="fixed top-0 z-50 w-full bg-white border-b border-love-100 shadow-sm">
                 <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-                    <Link to="/" className="flex items-center gap-2 group" onClick={closeMenu}>
-                        <Heart className="w-6 h-6 text-love-500 fill-love-500 animate-heartbeat" />
-                        <span className="font-handwriting text-2xl font-bold text-love-600 bg-clip-text">
+                    <Link to="/" className="flex items-center gap-3 group" onClick={closeMenu}>
+                        <Heart className="text-4xl w-10 h-10 text-love-600 fill-love-600 animate-heartbeat filter drop-shadow-sm" />
+                        <span className="font-handwriting text-4xl font-bold text-love-600 drop-shadow-sm pt-2">
                             Love Castle
                         </span>
                     </Link>

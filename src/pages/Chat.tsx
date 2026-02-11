@@ -7,6 +7,8 @@ import {
     where,
     getDocs,
     addDoc,
+    setDoc,
+    doc,
     onSnapshot,
     serverTimestamp,
     orderBy,
@@ -26,6 +28,23 @@ export function Chat() {
     const [newMessage, setNewMessage] = useState('');
     const [chatId, setChatId] = useState<string | null>(null);
     const messagesEndRef = useRef<HTMLDivElement>(null);
+
+    const [recentChats, setRecentChats] = useState<any[]>([]);
+
+    useEffect(() => {
+        if (!user) return;
+        const q = query(
+            collection(db!, 'chats'),
+            where('participants', 'array-contains', user.uid),
+            orderBy('lastMessageTimestamp', 'desc')
+        );
+
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            setRecentChats(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+        });
+
+        return unsubscribe;
+    }, [user]);
 
     // Scroll to bottom of chat
     useEffect(() => {
@@ -72,8 +91,9 @@ export function Chat() {
 
     const sendMessage = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!newMessage.trim() || !chatId || !user) return;
+        if (!newMessage.trim() || !chatId || !user || !selectedUser) return;
 
+        // 1. Add message to subcollection
         await addDoc(collection(db!, 'chats', chatId, 'messages'), {
             text: newMessage,
             senderId: user.uid,
@@ -81,10 +101,19 @@ export function Chat() {
             senderName: romanticUsername
         });
 
-        setNewMessage('');
+        // 2. Update/Create parent chat document for "Inbox" listing
+        // We store participantNames map so we don't need to fetch user docs every time we list chats
+        await setDoc(doc(db!, 'chats', chatId), {
+            participants: [user.uid, selectedUser.id],
+            lastMessage: newMessage,
+            lastMessageTimestamp: serverTimestamp(),
+            participantNames: {
+                [user.uid]: romanticUsername,
+                [selectedUser.id]: selectedUser.romanticUsername
+            }
+        }, { merge: true });
 
-        // Ensure chat document exists (optional, could be done once)
-        // await setDoc(doc(db, 'chats', chatId), { participants: [user.uid, selectedUser.id] }, { merge: true });
+        setNewMessage('');
     };
 
     if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
@@ -152,7 +181,7 @@ export function Chat() {
                     </div>
 
                     <div className="p-4 flex-1 overflow-y-auto">
-                        <div className="mb-4">
+                        <div className="mb-6">
                             <label className="text-sm font-medium text-gray-700 mb-2 block">Find your Valentine</label>
                             <div className="flex gap-2">
                                 <input
@@ -172,26 +201,79 @@ export function Chat() {
                             </div>
                         </div>
 
-                        <div className="space-y-2">
-                            {searchResults.map((result) => (
-                                <div
-                                    key={result.id}
-                                    onClick={() => setSelectedUser(result)}
-                                    className={`p-3 rounded-xl flex items-center gap-3 cursor-pointer transition-colors ${selectedUser?.id === result.id ? 'bg-love-100 border-love-200' : 'hover:bg-gray-50 border border-transparent'}`}
-                                >
-                                    <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-                                        <User className="w-5 h-5 text-gray-500" />
-                                    </div>
-                                    <div>
-                                        <p className="font-semibold text-gray-900">{result.romanticUsername}</p>
-                                        <p className="text-xs text-gray-500">Click to chat</p>
-                                    </div>
+                        {/* Search Results */}
+                        {searchResults.length > 0 && (
+                            <div className="mb-6">
+                                <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Search Results</h3>
+                                <div className="space-y-2">
+                                    {searchResults.map((result) => (
+                                        <div
+                                            key={result.id}
+                                            onClick={() => {
+                                                setSelectedUser(result);
+                                                setSearchResults([]); // Clear search after selection
+                                                setSearchQuery('');
+                                            }}
+                                            className="p-3 rounded-xl flex items-center gap-3 cursor-pointer hover:bg-love-50 border border-transparent hover:border-love-100 transition-colors"
+                                        >
+                                            <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                                                <User className="w-5 h-5 text-gray-500" />
+                                            </div>
+                                            <div>
+                                                <p className="font-semibold text-gray-900">{result.romanticUsername}</p>
+                                                <p className="text-xs text-gray-500">Tap to chat</p>
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
-                            ))}
-                            {searchResults.length === 0 && searchQuery && (
-                                <p className="text-center text-gray-400 text-sm mt-4">No cupids found.</p>
+                            </div>
+                        )}
+
+                        {/* Recent Chats (Inbox) */}
+                        <div>
+                            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Recent Messages</h3>
+                            {recentChats.length === 0 ? (
+                                <div className="text-center py-8 text-gray-400">
+                                    <MessageCircleHeart className="w-8 h-8 mx-auto mb-2 opacity-20" />
+                                    <p className="text-sm">No messages yet.</p>
+                                </div>
+                            ) : (
+                                <div className="space-y-2">
+                                    {recentChats.map((chat) => {
+                                        // Find the OTHER user in the participant list/map
+                                        // We stored { uid: "Romeo", uid2: "Juliet" } in chat metadata
+                                        // But simplified, we can just save "participantNames" map in the chat doc
+                                        const otherName = chat.participantNames?.[Object.keys(chat.participantNames).find(uid => uid !== user?.uid) || ''] || "Secret Admirer";
+
+                                        return (
+                                            <div
+                                                key={chat.id}
+                                                onClick={() => {
+                                                    // Construct a fake "user" object to trigger the chat view
+                                                    const otherUid = chat.participants.find((uid: string) => uid !== user?.uid);
+                                                    setSelectedUser({ id: otherUid, romanticUsername: otherName });
+                                                }}
+                                                className={`p-3 rounded-xl flex items-center gap-3 cursor-pointer transition-colors ${chatId === chat.id ? 'bg-love-100 border-love-200' : 'hover:bg-gray-50 border border-transparent'}`}
+                                            >
+                                                <div className="w-10 h-10 rounded-full bg-love-100 flex items-center justify-center text-lg">
+                                                    💌
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                    <p className="font-semibold text-gray-900 truncate">{otherName}</p>
+                                                    <p className="text-xs text-gray-500 truncate">{chat.lastMessage || "Start chatting..."}</p>
+                                                </div>
+                                                {chat.lastMessageTimestamp && (
+                                                    <span className="text-[10px] text-gray-400 whitespace-nowrap">
+                                                        {chat.lastMessageTimestamp?.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                                    </span>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
                             )}
                         </div>
+
                     </div>
                 </div>
 
