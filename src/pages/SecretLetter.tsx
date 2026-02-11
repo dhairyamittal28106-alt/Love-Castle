@@ -1,8 +1,10 @@
+
 import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send, Copy, Heart, MailOpen } from '../components/ui/Icons';
 import type { ComponentType } from 'react';
+import { InterstitialAd } from '../components/InterstitialAd';
 
 type MotionComponentProps = Record<string, unknown>;
 const MotionDiv = motion.div as ComponentType<MotionComponentProps>;
@@ -12,6 +14,9 @@ export function SecretLetter() {
     const [message, setMessage] = useState('');
     const [recipient, setRecipient] = useState('');
     const [generatedLink, setGeneratedLink] = useState('');
+    const [showAd, setShowAd] = useState(false);
+    const [tempLink, setTempLink] = useState('');
+
     const encodedMessage = searchParams.get('m');
     const encodedRecipient = searchParams.get('r');
 
@@ -26,7 +31,14 @@ export function SecretLetter() {
         const encoded = encodeURIComponent(btoa(message));
         const encodedRec = encodeURIComponent(btoa(recipient));
         const link = `${window.location.origin}/letter?m=${encoded}&r=${encodedRec}`;
-        setGeneratedLink(link);
+
+        setTempLink(link);
+        setShowAd(true);
+    };
+
+    const handleAdComplete = () => {
+        setShowAd(false);
+        setGeneratedLink(tempLink);
     };
 
     const copyToClipboard = () => {
@@ -91,6 +103,8 @@ export function SecretLetter() {
 
     return (
         <div className="container mx-auto px-4 py-12 max-w-2xl">
+            {showAd && <InterstitialAd onComplete={handleAdComplete} />}
+
             <MotionDiv
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
@@ -134,7 +148,7 @@ export function SecretLetter() {
                         Seal with a Kiss (Generate Link)
                     </button>
 
-                    {generatedLink && (
+                    {generatedLink && !showAd && (
                         <MotionDiv
                             initial={{ height: "0px", opacity: 0 }}
                             animate={{ height: "auto", opacity: 1 }}

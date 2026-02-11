@@ -1,5 +1,7 @@
-import { Link, Outlet } from 'react-router-dom'; import { BackgroundEffect } from './components/ui/BackgroundEffect';
+import { Link, Outlet } from 'react-router-dom';
+import { BackgroundEffect } from './components/ui/BackgroundEffect';
 import { Heart, MessageCircleHeart } from './components/ui/Icons';
+import { GoogleAdSense } from './components/GoogleAdSense';
 
 export function Layout() {
     return (
@@ -36,6 +38,15 @@ export function Layout() {
             <main className="pt-16 min-h-[calc(100vh-footer-height)]">
                 <Outlet />
             </main>
+
+            {/* Ad Container */}
+            <div className="container mx-auto px-4 py-4">
+                <GoogleAdSense
+                    client="ca-pub-8295491395007414"
+                    slot="1011003061"
+                />
+            </div>
+
             <footer className="py-8 bg-white border-t border-love-100">
                 <div className="container mx-auto px-4 text-center text-love-800/60">
                     <p>© 2024 Love Castle Inc.</p>

@@ -1,7 +1,9 @@
+
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, Sparkles, Trophy, RotateCcw, Flame, HelpCircle } from '../components/ui/Icons';
 import confetti from 'canvas-confetti';
+import { InterstitialAd } from '../components/InterstitialAd';
 
 import type { ComponentType } from 'react';
 
@@ -88,6 +90,8 @@ function LoveCalculator() {
     const [name2, setName2] = useState('');
     const [result, setResult] = useState<number | null>(null);
     const [calculating, setCalculating] = useState(false);
+    const [showAd, setShowAd] = useState(false);
+    const [tempResult, setTempResult] = useState<number | null>(null);
 
     const calculateLove = () => {
         if (!name1 || !name2) return;
@@ -103,22 +107,32 @@ function LoveCalculator() {
                 sum += combined.charCodeAt(i);
             }
             const score = (sum % 101); // 0-100
-            setResult(score >= 80 ? score : Math.min(score + 20, 100)); // Bias towards happiness
-            setCalculating(false);
+            const finalScore = score >= 80 ? score : Math.min(score + 20, 100);
 
-            if (score > 50) {
-                confetti({
-                    particleCount: 100,
-                    spread: 70,
-                    origin: { y: 0.6 },
-                    colors: ['#f43f5e', '#ec4899', '#e11d48']
-                });
-            }
-        }, 2000);
+            setTempResult(finalScore);
+            setShowAd(true);
+            setCalculating(false);
+        }, 1500);
+    };
+
+    const handleAdComplete = () => {
+        setShowAd(false);
+        setResult(tempResult);
+
+        if (tempResult && tempResult > 50) {
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.6 },
+                colors: ['#f43f5e', '#ec4899', '#e11d48']
+            });
+        }
     };
 
     return (
         <div className="max-w-md mx-auto bg-white p-8 rounded-3xl shadow-xl border border-love-100 text-center">
+            {showAd && <InterstitialAd onComplete={handleAdComplete} />}
+
             <h2 className="text-3xl font-bold text-love-600 mb-8 font-handwriting">Love Calculator</h2>
 
             <div className="space-y-6">
@@ -152,7 +166,7 @@ function LoveCalculator() {
             </div>
 
             <AnimatePresence>
-                {result !== null && (
+                {result !== null && !showAd && (
                     <MotionDiv
                         initial={{ scale: 0, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
@@ -178,6 +192,7 @@ function FlappyHeart() {
     const [score, setScore] = useState(0);
     const [highScore, setHighScore] = useState(0);
     const [gameOver, setGameOver] = useState(false);
+    const [showAd, setShowAd] = useState(false);
 
     useEffect(() => {
         if (!isPlaying) return;
@@ -297,7 +312,8 @@ function FlappyHeart() {
 
         const endGame = () => {
             setIsPlaying(false);
-            setGameOver(true);
+            // Trigger Ad before showing game over screen
+            setShowAd(true);
             if (currentScore > highScore) setHighScore(currentScore);
         };
 
@@ -310,8 +326,15 @@ function FlappyHeart() {
         };
     }, [isPlaying, highScore]);
 
+    const handleAdComplete = () => {
+        setShowAd(false);
+        setGameOver(true);
+    };
+
     return (
         <div className="max-w-2xl mx-auto p-4 bg-white rounded-3xl shadow-xl border border-love-100 text-center">
+            {showAd && <InterstitialAd onComplete={handleAdComplete} />}
+
             <div className="flex justify-between items-center mb-4 px-4">
                 <div className="text-xl font-bold text-gray-700">Score: {score}</div>
                 <div className="text-xl font-bold text-love-600">Best: {highScore}</div>
@@ -323,7 +346,7 @@ function FlappyHeart() {
                     height={400}
                     className="w-full bg-love-50 rounded-xl cursor-pointer border-4 border-love-200"
                 />
-                {(!isPlaying && !gameOver) && (
+                {(!isPlaying && !gameOver && !showAd) && (
                     <div className="absolute inset-0 flex items-center justify-center bg-black/20 rounded-xl">
                         <button
                             onClick={() => { setIsPlaying(true); setScore(0); setGameOver(false); }}
@@ -333,7 +356,7 @@ function FlappyHeart() {
                         </button>
                     </div>
                 )}
-                {gameOver && (
+                {gameOver && !showAd && (
                     <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-xl">
                         <div className="bg-white p-8 rounded-2xl shadow-2xl animate-bounce-in">
                             <Trophy className="w-16 h-16 text-yellow-400 mx-auto mb-4" />
@@ -359,6 +382,8 @@ function FlamesGame() {
     const [name2, setName2] = useState('');
     const [result, setResult] = useState<string | null>(null);
     const [calculating, setCalculating] = useState(false);
+    const [showAd, setShowAd] = useState(false);
+    const [tempResult, setTempResult] = useState<string | null>(null);
 
     const calculateFlames = () => {
         if (!name1 || !name2) return;
@@ -387,22 +412,30 @@ function FlamesGame() {
                 flames.splice(index, 1);
             }
 
-            setResult(flames[0]);
+            setTempResult(flames[0]);
+            setShowAd(true);
             setCalculating(false);
-
-            if (['Lovers', 'Marriage', 'Affection'].includes(flames[0])) {
-                confetti({
-                    particleCount: 150,
-                    spread: 80,
-                    origin: { y: 0.6 },
-                    colors: ['#f43f5e', '#ec4899', '#e11d48']
-                });
-            }
         }, 1500);
+    };
+
+    const handleAdComplete = () => {
+        setShowAd(false);
+        setResult(tempResult);
+
+        if (['Lovers', 'Marriage', 'Affection'].includes(tempResult || '')) {
+            confetti({
+                particleCount: 150,
+                spread: 80,
+                origin: { y: 0.6 },
+                colors: ['#f43f5e', '#ec4899', '#e11d48']
+            });
+        }
     };
 
     return (
         <div className="max-w-md mx-auto bg-white p-8 rounded-3xl shadow-xl border border-orange-100 text-center">
+            {showAd && <InterstitialAd onComplete={handleAdComplete} />}
+
             <h2 className="text-3xl font-bold text-orange-500 mb-8 font-handwriting">FLAMES</h2>
 
             <div className="space-y-6">
@@ -436,7 +469,7 @@ function FlamesGame() {
             </div>
 
             <AnimatePresence>
-                {result && (
+                {result && !showAd && (
                     <MotionDiv
                         initial={{ scale: 0, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
@@ -463,6 +496,8 @@ function FuturePredictor() {
     const [question, setQuestion] = useState('');
     const [answer, setAnswer] = useState<string | null>(null);
     const [predicting, setPredicting] = useState(false);
+    const [showAd, setShowAd] = useState(false);
+    const [tempAnswer, setTempAnswer] = useState<string | null>(null);
 
     const predictions = [
         "Yes, definitely! (Unless they're hungry)",
@@ -484,13 +519,21 @@ function FuturePredictor() {
 
         setTimeout(() => {
             const random = Math.floor(Math.random() * predictions.length);
-            setAnswer(predictions[random]);
+            setTempAnswer(predictions[random]);
+            setShowAd(true);
             setPredicting(false);
         }, 1500);
     };
 
+    const handleAdComplete = () => {
+        setShowAd(false);
+        setAnswer(tempAnswer);
+    };
+
     return (
         <div className="max-w-md mx-auto bg-white p-8 rounded-3xl shadow-xl border border-blue-100 text-center">
+            {showAd && <InterstitialAd onComplete={handleAdComplete} />}
+
             <h2 className="text-3xl font-bold text-blue-500 mb-8 font-handwriting">Oracle of Love</h2>
 
             <div className="space-y-6">
@@ -515,7 +558,7 @@ function FuturePredictor() {
             </div>
 
             <AnimatePresence>
-                {answer && (
+                {answer && !showAd && (
                     <MotionDiv
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
