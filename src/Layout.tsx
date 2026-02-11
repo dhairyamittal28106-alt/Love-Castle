@@ -1,6 +1,6 @@
 
 import { useState } from 'react';
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import { Link, Outlet } from 'react-router-dom';
 import { BackgroundEffect } from './components/ui/BackgroundEffect';
 import { Heart, MessageCircleHeart, Menu, X } from './components/ui/Icons';
 import { GoogleAdSense } from './components/GoogleAdSense';
@@ -8,7 +8,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 export function Layout() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const location = useLocation();
 
     const closeMenu = () => setIsMenuOpen(false);
 
