@@ -33,14 +33,18 @@ export function Chat() {
 
     useEffect(() => {
         if (!user) return;
+        // Note: Firestore requires a composite index for where('participants', 'array-contains') + orderBy('lastMessageTimestamp').
+        // To keep it simple without index configuration, we'll sort in client side or remove orderBy for now.
         const q = query(
             collection(db!, 'chats'),
-            where('participants', 'array-contains', user.uid),
-            orderBy('lastMessageTimestamp', 'desc')
+            where('participants', 'array-contains', user.uid)
         );
 
         const unsubscribe = onSnapshot(q, (snapshot) => {
-            setRecentChats(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+            const chats = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            // Client-side sort
+            chats.sort((a: any, b: any) => (b.lastMessageTimestamp?.toMillis() || 0) - (a.lastMessageTimestamp?.toMillis() || 0));
+            setRecentChats(chats);
         });
 
         return unsubscribe;
