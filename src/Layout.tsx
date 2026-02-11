@@ -25,6 +25,7 @@ export function Layout() {
 
                     {/* Desktop Menu */}
                     <div className="hidden md:flex items-center gap-6">
+                        <NavLink to="/" label="Home" />
                         <NavLink to="/letter" label="Love Letter" />
                         <NavLink to="/games" label="Love Triangle" />
                         <Link to="/chat" className="text-love-900 hover:text-love-600 transition-colors font-medium flex items-center gap-1">
@@ -56,6 +57,7 @@ export function Layout() {
                         exit={{ opacity: 0, y: -20 }}
                         className="fixed inset-0 top-16 z-40 bg-white/95 backdrop-blur-md md:hidden flex flex-col p-6 gap-6 overflow-y-auto border-b border-love-100"
                     >
+                        <MobileNavLink to="/" label="🏠 Home" onClick={closeMenu} />
                         <MobileNavLink to="/letter" label="💌 Love Letter" onClick={closeMenu} />
                         <MobileNavLink to="/games" label="🎮 Love Triangle" onClick={closeMenu} />
                         <MobileNavLink to="/chat" label="💬 Secret Chat" onClick={closeMenu} />
