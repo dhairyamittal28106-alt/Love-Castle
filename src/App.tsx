@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Analytics } from '@vercel/analytics/react';
 import { AuthProvider } from './context/AuthContext';
 import { Layout } from './Layout';
 import { LandingPage } from './pages/LandingPage';
@@ -25,6 +26,7 @@ function App() {
               <Route path="settings" element={<Settings />} />
             </Route>
           </Routes>
+          <Analytics />
         </BrowserRouter>
       </AuthProvider>
     </ErrorBoundary>
