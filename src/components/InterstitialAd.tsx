@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 
 interface InterstitialAdProps {
     onComplete: () => void;
-    duration?: number; // seconds
+    duration?: number; 
 }
 
 export function InterstitialAd({ onComplete, duration = 5 }: InterstitialAdProps) {

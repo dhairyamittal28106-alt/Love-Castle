@@ -22,7 +22,7 @@ export function SecretLetter() {
 
     const [isOpen, setIsOpen] = useState(false);
 
-    // Decrypt if viewing
+    
     const viewedMessage = encodedMessage ? atob(decodeURIComponent(encodedMessage)) : '';
     const viewedRecipient = encodedRecipient ? atob(decodeURIComponent(encodedRecipient)) : '';
 

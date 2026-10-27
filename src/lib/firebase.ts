@@ -3,7 +3,7 @@ import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
-// Your web app's Firebase configuration
+
 const firebaseConfig = {
     apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
     authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
@@ -13,14 +13,14 @@ const firebaseConfig = {
     appId: import.meta.env.VITE_FIREBASE_APP_ID
 };
 
-// Initialize Firebase safely
+
 let app: import("firebase/app").FirebaseApp | undefined;
 let auth: import("firebase/auth").Auth | undefined;
 let db: import("firebase/firestore").Firestore | undefined;
 let googleProvider: GoogleAuthProvider | undefined;
 
 try {
-    // Only initialize if config is present (basic check)
+    
     if (firebaseConfig.apiKey && firebaseConfig.projectId) {
         app = initializeApp(firebaseConfig);
         auth = getAuth(app);

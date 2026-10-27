@@ -23,7 +23,7 @@ export function Layout() {
                         </span>
                     </Link>
 
-                    {/* Desktop Menu */}
+                     
                     <div className="hidden md:flex items-center gap-6">
                         <NavLink to="/" label="Home" />
                         <NavLink to="/letter" label="Love Letter" />
@@ -38,7 +38,7 @@ export function Layout() {
                         </Link>
                     </div>
 
-                    {/* Mobile Menu Button */}
+                     
                     <button
                         className="md:hidden p-2 text-love-600 focus:outline-none"
                         onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -48,7 +48,7 @@ export function Layout() {
                 </div>
             </nav>
 
-            {/* Mobile Menu Overlay */}
+             
             <AnimatePresence>
                 {isMenuOpen && (
                     <motion.div
@@ -77,7 +77,7 @@ export function Layout() {
                 <Outlet />
             </main>
 
-            {/* Ad Container */}
+             
             <div className="container mx-auto px-4 py-4">
                 <GoogleAdSense
                     client="ca-pub-8295491395007414"

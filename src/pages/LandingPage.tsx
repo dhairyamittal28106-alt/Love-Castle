@@ -9,7 +9,7 @@ const MotionDiv = motion.div as ComponentType<MotionComponentProps>;
 export function LandingPage() {
     return (
         <div className="space-y-20 pb-20 overflow-x-hidden">
-            {/* Hero Section */}
+             
             <section className="relative min-h-[80vh] flex items-center justify-center overflow-hidden bg-gradient-to-b from-love-50 to-white">
                 <div className="absolute inset-0 pointer-events-none">
                     <div className="absolute top-20 left-10 w-20 h-20 bg-love-200 rounded-full opacity-30 animate-float" />
@@ -47,7 +47,7 @@ export function LandingPage() {
                 </div>
             </section>
 
-            {/* Meme Section */}
+             
             <section className="container mx-auto px-4">
                 <MotionDiv
                     className="bg-white rounded-3xl p-8 md:p-12 shadow-xl border border-love-100 max-w-4xl mx-auto text-center"
@@ -79,7 +79,7 @@ export function LandingPage() {
                 </MotionDiv>
             </section>
 
-            {/* Features Grid */}
+             
             <section className="container mx-auto px-4">
                 <h2 className="text-3xl font-bold text-center mb-12">Everything you need for Feb 14th</h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

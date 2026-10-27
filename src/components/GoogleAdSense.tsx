@@ -4,8 +4,8 @@ import { useEffect } from 'react';
 interface GoogleAdSenseProps {
     className?: string;
     style?: React.CSSProperties;
-    client?: string; // ca-pub-XXXXXXXXXXXXXXXX
-    slot?: string;   // XXXXXXXXXX
+    client?: string; 
+    slot?: string;   
     format?: 'auto' | 'fluid' | 'rectangle';
     responsive?: boolean;
 }
@@ -19,7 +19,7 @@ declare global {
 export function GoogleAdSense({
     className = "",
     style = { display: 'block' },
-    client = "ca-pub-XXXXXXXXXXXXXXXX", // Default placeholder
+    client = "ca-pub-XXXXXXXXXXXXXXXX", 
     slot = "XXXXXXXXXX",
     format = "auto",
     responsive = true

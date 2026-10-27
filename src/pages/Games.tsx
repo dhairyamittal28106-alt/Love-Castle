@@ -98,15 +98,15 @@ function LoveCalculator() {
         setCalculating(true);
         setResult(null);
 
-        // Fake calculation delay
+        
         setTimeout(() => {
-            // Deterministic "random" based on string char codes
+            
             const combined = (name1 + name2).toLowerCase().replace(/\s/g, '');
             let sum = 0;
             for (let i = 0; i < combined.length; i++) {
                 sum += combined.charCodeAt(i);
             }
-            const score = (sum % 101); // 0-100
+            const score = (sum % 101); 
             const finalScore = score >= 80 ? score : Math.min(score + 20, 100);
 
             setTempResult(finalScore);
@@ -185,7 +185,7 @@ function LoveCalculator() {
     );
 }
 
-// Simple Flappy Bird clone
+
 function FlappyHeart() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [isPlaying, setIsPlaying] = useState(false);
@@ -220,13 +220,13 @@ function FlappyHeart() {
             velocity = jump;
         };
 
-        // Touch/Click to jump
+        
         const handleClick = () => handleJump();
         canvas.addEventListener('mousedown', handleClick);
         canvas.addEventListener('touchstart', handleClick);
 
         const checkCollision = (pipe: { x: number, topHeight: number }) => {
-            // Pipe collision
+            
             if (
                 (50 + birdSize > pipe.x && 50 < pipe.x + 50) &&
                 (birdY < pipe.topHeight || birdY + birdSize > pipe.topHeight + pipeGap)
@@ -251,11 +251,11 @@ function FlappyHeart() {
         }
 
         const loop = () => {
-            // Physics
+            
             velocity += gravity;
             birdY += velocity;
 
-            // Generate pipes
+            
             if (frameCount % 100 === 0) {
                 const minHeight = 50;
                 const maxHeight = canvas.height - pipeGap - minHeight;
@@ -263,25 +263,25 @@ function FlappyHeart() {
                 pipes.push({ x: canvas.width, topHeight });
             }
 
-            // Move pipes
+            
             pipes.forEach(pipe => {
                 pipe.x -= pipeSpeed;
             });
 
-            // Remove off-screen pipes
+            
             if (pipes.length > 0 && pipes[0].x < -50) {
                 pipes.shift();
                 currentScore++;
                 setScore(currentScore);
             }
 
-            // Check collisions
-            // Floor/Ceiling
+            
+            
             if (birdY > canvas.height - birdSize || birdY < 0) {
                 endGame();
                 return;
             }
-            // Pipes
+            
             for (const pipe of pipes) {
                 if (checkCollision(pipe)) {
                     endGame();
@@ -289,17 +289,17 @@ function FlappyHeart() {
                 }
             }
 
-            // Draw
+            
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Background
+            
             ctx.fillStyle = '#fff1f2';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Bird (Heart)
+            
             drawHeart(50, birdY, birdSize);
 
-            // Pipes
+            
             ctx.fillStyle = '#be123c';
             pipes.forEach(pipe => {
                 ctx.fillRect(pipe.x, 0, 50, pipe.topHeight);
@@ -312,7 +312,7 @@ function FlappyHeart() {
 
         const endGame = () => {
             setIsPlaying(false);
-            // Trigger Ad before showing game over screen
+            
             setShowAd(true);
             if (currentScore > highScore) setHighScore(currentScore);
         };

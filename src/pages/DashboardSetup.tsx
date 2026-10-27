@@ -25,7 +25,7 @@ export function DashboardSetup({ onComplete }: { onComplete: (data: UserData) =>
         if (step < 3) {
             setStep(step + 1);
         } else {
-            // Save and Finish
+            
             localStorage.setItem('loveCastle_userData', JSON.stringify(userData));
             onComplete(userData);
         }

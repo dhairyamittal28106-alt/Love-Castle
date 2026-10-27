@@ -11,12 +11,12 @@ export function Dashboard() {
     const [userData, setUserData] = useState<UserData | null>(null);
     const [loading, setLoading] = useState(true);
 
-    // Dynamic metrics state
+    
     const [loveScore, setLoveScore] = useState(0);
     const [textsCount, setTextsCount] = useState(0);
     const [daysTogether, setDaysTogether] = useState(0);
 
-    const [nextDate, setNextDate] = useState<string | null>('2024-02-14'); // Default Valentine's
+    const [nextDate, setNextDate] = useState<string | null>('2024-02-14'); 
     const [goodMorningSent, setGoodMorningSent] = useState(false);
     const [showReminder, setShowReminder] = useState(false);
 
@@ -26,7 +26,7 @@ export function Dashboard() {
             const data = JSON.parse(stored);
             setUserData(data);
 
-            // Calculate initial metrics based on start date
+            
             if (data.anniversaryDate) {
                 const start = new Date(data.anniversaryDate);
                 const now = new Date();
@@ -34,14 +34,14 @@ export function Dashboard() {
                 const diffDays = Math.max(0, Math.floor(diffTime / (1000 * 60 * 60 * 24)));
 
                 setDaysTogether(diffDays);
-                setLoveScore(diffDays * 50); // 50 points per day
-                setTextsCount(diffDays * 12); // Average 12 texts per day
+                setLoveScore(diffDays * 50); 
+                setTextsCount(diffDays * 12); 
             }
         }
         setLoading(false);
     }, []);
 
-    // Check for "Day Before" message
+    
     useEffect(() => {
         if (nextDate) {
             const today = new Date();
@@ -66,7 +66,7 @@ export function Dashboard() {
     if (!userData) {
         return <DashboardSetup onComplete={(data) => {
             setUserData(data);
-            // Recalculate immediately for new users
+            
             const start = new Date(data.anniversaryDate);
             const now = new Date();
             const diffTime = now.getTime() - start.getTime();
@@ -90,9 +90,9 @@ export function Dashboard() {
                 </div>
             </div>
 
-            {/* Notifications / Reminders */}
+             
             <AnimatePresence>
-                {/* Day Before Reminder */}
+                 
                 {showReminder && (
                     <MotionDiv
                         initial={{ opacity: 0, y: -20 }}
@@ -108,7 +108,7 @@ export function Dashboard() {
                     </MotionDiv>
                 )}
 
-                {/* Good Morning Reminder */}
+                 
                 {!goodMorningSent && (
                     <MotionDiv
                         initial={{ opacity: 0, scale: 0.95 }}
@@ -134,7 +134,7 @@ export function Dashboard() {
                 )}
             </AnimatePresence>
 
-            {/* Metrics Grid */}
+             
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 <MetricCard
                     icon={<Heart className="w-5 h-5 text-white" />}
@@ -167,9 +167,9 @@ export function Dashboard() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {/* Date Planner Section */}
+                 
                 <div className="lg:col-span-2 space-y-8">
-                    {/* Activity Chart */}
+                     
                     <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                         <div className="flex items-center justify-between mb-6">
                             <h3 className="text-lg font-semibold text-gray-900">Affection Over Time</h3>
@@ -188,7 +188,7 @@ export function Dashboard() {
                         </div>
                     </div>
 
-                    {/* Date Planner Widget */}
+                     
                     <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
                         <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
                             <Calendar className="w-5 h-5 text-love-500" />
@@ -215,7 +215,7 @@ export function Dashboard() {
                     </div>
                 </div>
 
-                {/* Recent Activity */}
+                 
                 <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 h-fit">
                     <h3 className="text-lg font-semibold text-gray-900 mb-6">Recent Activity</h3>
                     <div className="space-y-6">

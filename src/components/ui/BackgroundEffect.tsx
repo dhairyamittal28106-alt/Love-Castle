@@ -9,23 +9,23 @@ export function BackgroundEffect() {
     const [hearts, setHearts] = useState<{ id: number; x: number; delay: number; size: number }[]>([]);
 
     useEffect(() => {
-        // Generate static hearts on mount to avoid hydration mismatch if SSR (though this is SPA)
-        // and to have them ready.
+        
+        
         const newHearts = Array.from({ length: 20 }).map((_, i) => ({
             id: i,
-            x: Math.random() * 100, // percentage
+            x: Math.random() * 100, 
             delay: Math.random() * 20,
-            size: Math.random() * 20 + 10, // 10px to 30px
+            size: Math.random() * 20 + 10, 
         }));
         setHearts(newHearts);
     }, []);
 
     return (
         <div className="fixed inset-0 pointer-events-none z-[-1] overflow-hidden">
-            {/* Clean Background - no blur, just hearts */}
+             
             <div className="absolute inset-0 bg-transparent" />
 
-            {/* Floating Hearts */}
+             
             {hearts.map((heart) => (
                 <MotionDiv
                     key={heart.id}

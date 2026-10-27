@@ -33,8 +33,8 @@ export function Chat() {
 
     useEffect(() => {
         if (!user) return;
-        // Note: Firestore requires a composite index for where('participants', 'array-contains') + orderBy('lastMessageTimestamp').
-        // To keep it simple without index configuration, we'll sort in client side or remove orderBy for now.
+        
+        
         const q = query(
             collection(db!, 'chats'),
             where('participants', 'array-contains', user.uid)
@@ -42,7 +42,7 @@ export function Chat() {
 
         const unsubscribe = onSnapshot(q, (snapshot) => {
             const chats = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            // Client-side sort
+            
             chats.sort((a: any, b: any) => (b.lastMessageTimestamp?.toMillis() || 0) - (a.lastMessageTimestamp?.toMillis() || 0));
             setRecentChats(chats);
         });
@@ -50,12 +50,12 @@ export function Chat() {
         return unsubscribe;
     }, [user]);
 
-    // Scroll to bottom of chat
+    
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages]);
 
-    // Search for users
+    
     const handleSearch = async () => {
         if (!searchQuery.trim()) return;
         const q = query(
@@ -66,20 +66,20 @@ export function Chat() {
         const querySnapshot = await getDocs(q);
         const results = querySnapshot.docs
             .map(doc => ({ id: doc.id, ...doc.data() }))
-            .filter((u: any) => u.id !== user?.uid); // Exclude self
+            .filter((u: any) => u.id !== user?.uid); 
         setSearchResults(results);
     };
 
-    // Initialize/Fetch Chat
+    
     useEffect(() => {
         if (!user || !selectedUser) return;
 
-        // Create a consistent Chat ID based on sorted UIDs
+        
         const participants = [user.uid, selectedUser.id].sort();
         const generatedChatId = participants.join('_');
         setChatId(generatedChatId);
 
-        // Listen for messages
+        
         const q = query(
             collection(db!, 'chats', generatedChatId, 'messages'),
             orderBy('timestamp', 'asc'),
@@ -97,7 +97,7 @@ export function Chat() {
         e.preventDefault();
         if (!newMessage.trim() || !chatId || !user || !selectedUser) return;
 
-        // 1. Add message to subcollection
+        
         await addDoc(collection(db!, 'chats', chatId, 'messages'), {
             text: newMessage,
             senderId: user.uid,
@@ -105,8 +105,8 @@ export function Chat() {
             senderName: romanticUsername
         });
 
-        // 2. Update/Create parent chat document for "Inbox" listing
-        // We store participantNames map so we don't need to fetch user docs every time we list chats
+        
+        
         await setDoc(doc(db!, 'chats', chatId), {
             participants: [user.uid, selectedUser.id],
             lastMessage: newMessage,
@@ -167,7 +167,7 @@ export function Chat() {
         <div className="container mx-auto px-4 py-8 h-[calc(100vh-80px)]">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-full">
 
-                {/* Sidebar: Profile & Search */}
+                 
                 <div className="md:col-span-1 bg-white rounded-3xl shadow-lg border border-love-100 overflow-hidden flex flex-col">
                     <div className="p-6 bg-love-50 border-b border-love-100">
                         <h2 className="text-xs font-bold text-love-600 uppercase tracking-wider mb-1">Your Secret Identity</h2>
@@ -205,7 +205,7 @@ export function Chat() {
                             </div>
                         </div>
 
-                        {/* Search Results */}
+                         
                         {searchResults.length > 0 && (
                             <div className="mb-6">
                                 <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Search Results</h3>
@@ -215,7 +215,7 @@ export function Chat() {
                                             key={result.id}
                                             onClick={() => {
                                                 setSelectedUser(result);
-                                                setSearchResults([]); // Clear search after selection
+                                                setSearchResults([]); 
                                                 setSearchQuery('');
                                             }}
                                             className="p-3 rounded-xl flex items-center gap-3 cursor-pointer hover:bg-love-50 border border-transparent hover:border-love-100 transition-colors"
@@ -233,7 +233,7 @@ export function Chat() {
                             </div>
                         )}
 
-                        {/* Recent Chats (Inbox) */}
+                         
                         <div>
                             <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Recent Messages</h3>
                             {recentChats.length === 0 ? (
@@ -244,16 +244,16 @@ export function Chat() {
                             ) : (
                                 <div className="space-y-2">
                                     {recentChats.map((chat) => {
-                                        // Find the OTHER user in the participant list/map
-                                        // We stored { uid: "Romeo", uid2: "Juliet" } in chat metadata
-                                        // But simplified, we can just save "participantNames" map in the chat doc
+                                        
+                                        
+                                        
                                         const otherName = chat.participantNames?.[Object.keys(chat.participantNames).find(uid => uid !== user?.uid) || ''] || "Secret Admirer";
 
                                         return (
                                             <div
                                                 key={chat.id}
                                                 onClick={() => {
-                                                    // Construct a fake "user" object to trigger the chat view
+                                                    
                                                     const otherUid = chat.participants.find((uid: string) => uid !== user?.uid);
                                                     setSelectedUser({ id: otherUid, romanticUsername: otherName });
                                                 }}
@@ -281,7 +281,7 @@ export function Chat() {
                     </div>
                 </div>
 
-                {/* Main Chat Area */}
+                 
                 <div className="md:col-span-2 bg-white rounded-3xl shadow-lg border border-love-100 flex flex-col overflow-hidden">
                     {selectedUser ? (
                         <>

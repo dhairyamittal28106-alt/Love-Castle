@@ -50,7 +50,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             setUser(user);
             if (user) {
                 try {
-                    // Check if user exists in DB, if not create with random username
+                    
                     const userRef = doc(db!, 'users', user.uid);
                     const userSnap = await getDoc(userRef);
 
@@ -59,7 +59,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                         if (data.romanticUsername) {
                             setRomanticUsername(data.romanticUsername);
                         } else {
-                            // HEAL: User exists but no username? Generate one!
+                            
                             const newUsername = generateUsername();
                             await setDoc(userRef, { romanticUsername: newUsername }, { merge: true });
                             setRomanticUsername(newUsername);

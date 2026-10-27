@@ -24,7 +24,7 @@ export function Settings() {
         localStorage.setItem('partnerName', partnerName);
         setSaved(true);
         setTimeout(() => setSaved(false), 2000);
-        // Dispatch storage event to update other components if they listen
+        
         window.dispatchEvent(new Event('storage'));
     };
 
@@ -52,7 +52,7 @@ export function Settings() {
                 </div>
 
                 <div className="p-6 space-y-6">
-                    {/* Romantic Identity Section */}
+                     
                     {romanticUsername ? (
                         <div className="bg-love-50/50 rounded-xl p-4 border border-love-100">
                             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -86,7 +86,7 @@ export function Settings() {
                         </div>
                     )}
 
-                    {/* Personal Details Form */}
+                     
                     <div className="space-y-4">
                         <div>
                             <label htmlFor="userName" className="block text-sm font-medium text-gray-700">
